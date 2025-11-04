@@ -1,0 +1,422 @@
+services:
+  - type: worker
+    name: crypto-trading-bot
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python main_bot.py
+    
+  - type: web
+    name: crypto-dashboard
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn web_dashboard:app --bind 0.0.0.0:$PORT
+```
+
+✅ Click **"Commit new file"**
+
+---
+
+## **STEP 3.4: Verify All Files**
+
+**Go to your repository homepage**
+
+You should see **6 files total:**
+```
+✅ README.md
+✅ requirements.txt
+✅ main_bot.py
+✅ web_dashboard.py
+✅ Procfile
+✅ render.yaml
+```
+
+**All files uploaded!** ✅
+
+---
+
+<a name="section-4"></a>
+# 🎯 SECTION 4: DEPLOY TO RENDER (15 minutes)
+
+## **STEP 4.1: Create Render Account**
+
+1. Go to: **https://render.com**
+2. Click **"Get Started"**
+3. Click **"Continue with GitHub"**
+4. Authorize Render (click "Authorize render")
+
+✅ **Logged into Render!**
+
+---
+
+## **STEP 4.2: Deploy Bot (Worker Service)**
+
+1. Click **"New +"** (top right)
+2. Select **"Background Worker"**
+3. Find and click **"Connect"** next to `crypto-trading-bot`
+
+**Fill in settings:**
+
+| Field | Value |
+|-------|-------|
+| **Name** | `crypto-trading-bot` |
+| **Environment** | `Python 3` |
+| **Build Command** | `pip install -r requirements.txt` |
+| **Start Command** | `python main_bot.py` |
+| **Instance Type** | `Free` |
+
+---
+
+**Add Environment Variables:**
+
+Click **"Advanced"** → Click **"Add Environment Variable"**
+
+**Add these 5 variables:**
+
+| Key | Value |
+|-----|-------|
+| `DELTA_API_KEY` | `9FffWVOKoIr4WwLPhSU5ZPBwuAh0JV` |
+| `DELTA_API_SECRET` | `E35Tu9uhczwqIhiCDytI1NuXkg5K5Aza5IWpS0uMFGELUDoVauDxbjkWyvfu` |
+| `DELTA_TESTNET` | `true` |
+| `TRADING_SYMBOL` | `BTC/USDT` |
+| `INTERVAL_SECONDS` | `900` |
+
+**⚠️ Use YOUR actual API keys from Step 2.2!**
+
+---
+
+3. Click **"Create Background Worker"**
+
+**Deployment starts:**
+```
+🔄 Deploying...
+   Cloning repository...
+   Installing dependencies...
+   Starting worker...
+```
+
+**Wait 2-3 minutes...**
+
+✅ **Service shows "Live"** (green dot)
+
+---
+
+## **STEP 4.3: Deploy Dashboard (Web Service)**
+
+1. Click **"New +"** again
+2. Select **"Web Service"**
+3. Select `crypto-trading-bot` repository
+4. Click **"Connect"**
+
+**Fill in:**
+
+| Field | Value |
+|-------|-------|
+| **Name** | `crypto-dashboard` |
+| **Environment** | `Python 3` |
+| **Build Command** | `pip install -r requirements.txt` |
+| **Start Command** | `gunicorn web_dashboard:app --bind 0.0.0.0:$PORT` |
+| **Instance Type** | `Free` |
+
+---
+
+**Add Environment Variables:**
+
+Click **"Advanced"**
+
+**Add SAME 5 variables as before:**
+- `DELTA_API_KEY`
+- `DELTA_API_SECRET`
+- `DELTA_TESTNET`: `true`
+- `TRADING_SYMBOL`: `BTC/USDT`
+- `INTERVAL_SECONDS`: `900`
+
+---
+
+3. Click **"Create Web Service"**
+
+**Wait 2-3 minutes...**
+
+**You'll see a URL:**
+```
+https://crypto-dashboard-xxxx.onrender.com
+```
+
+✅ **Dashboard deployed!**
+
+---
+
+<a name="section-5"></a>
+# 🎯 SECTION 5: VERIFICATION & TESTING (10 minutes)
+
+## **STEP 5.1: Check Bot Logs**
+
+1. Go to Render dashboard
+2. Click **"crypto-trading-bot"**
+3. Click **"Logs"** tab
+
+**✅ You should see:**
+```
+╔════════════════════════════════════════════════════════════╗
+║                                                            ║
+║          🚀 CRYPTO TRADING BOT STARTED                    ║
+║             Delta Exchange Trading System                 ║
+║                                                            ║
+╚════════════════════════════════════════════════════════════╝
+
+⚙️  CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Trading Pair:   BTC/USDT
+   Mode:           🧪 TESTNET (Fake Money)
+   Update Every:   900 seconds (15 minutes)
+   Started:        2025-01-04 15:30:45
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔄 Connecting to Delta Exchange...
+✅ Connected to Delta Exchange TESTNET
+💡 Using FAKE money - Safe for practice!
+
+💰 ACCOUNT BALANCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Total:      $10,000.00
+   Available:  $10,000.00
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔄 Starting market monitoring...
+
+======================================================================
+🔄 CYCLE #1 - 2025-01-04 15:30:50
+======================================================================
+
+📊 MARKET DATA (BTC/USDT)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Price:      $67,450.00
+   24h Change: +2.34%
+   24h High:   $68,200.00
+   24h Low:    $66,800.00
+   Volume:     $2,450,000,000
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💰 ACCOUNT STATUS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Available:  $10,000.00
+   Total:      $10,000.00
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ No open positions
+
+💡 Bot monitoring market (no auto-trading yet)
+
+⏳ Next update in 900s (15 min) at 15:45:50
+
+======================================================================
+```
+
+### **✅ SUCCESS Indicators:**
+- Says "TESTNET (Fake Money)"
+- Shows "Connected to Delta Exchange TESTNET"
+- Shows balance: $10,000.00
+- Shows BTC price (realistic value)
+- Shows "CYCLE #1"
+- No error messages
+
+### **❌ PROBLEM Indicators:**
+- Says "CONNECTION ERROR"
+- Shows "Check API keys"
+- Python error messages
+- Empty logs after 5 minutes
+
+**If problems, check:**
+- API keys are correct (no extra spaces)
+- `DELTA_TESTNET` = `true` (lowercase)
+- All 5 environment variables added
+
+---
+
+## **STEP 5.2: Check Dashboard**
+
+1. Click **"crypto-dashboard"** in Render
+2. Copy the URL (top of page)
+3. Open URL in new browser tab
+
+**✅ You should see:**
+```
+┌──────────────────────────────────────┐
+│    🚀 Crypto Trading Bot             │
+│  Delta Exchange Automated Trading    │
+│                                      │
+│  Status:    ⚫ Running               │
+│  Mode:      [TESTNET] (green)       │
+│  Symbol:    BTC/USDT                │
+│  Interval:  15 minutes              │
+│                                      │
+│  ✅ Testing Mode                    │
+│  Using fake money - Safe!           │
+└──────────────────────────────────────┘
+```
+
+### **✅ SUCCESS:**
+- Page loads (not blank)
+- Shows green "TESTNET" badge
+- Shows "Running" status
+- Looks styled (colors, layout)
+
+### **❌ PROBLEM:**
+- "Application Error"
+- Blank page
+- Only plain text
+- Won't load
+
+---
+
+## **STEP 5.3: Wait for Second Cycle**
+
+**Wait 15 minutes**, then:
+
+1. Go back to bot logs
+2. Scroll down
+3. Look for "CYCLE #2"
+
+**✅ Should see:**
+```
+======================================================================
+🔄 CYCLE #2 - 2025-01-04 15:45:50
+======================================================================
+```
+
+**If you see Cycle #2:**
+- ✅ Bot is working!
+- ✅ Updates automatically
+- ✅ Everything operational
+
+---
+
+<a name="section-6"></a>
+# 🎯 SECTION 6: DAILY MONITORING (Ongoing)
+
+## **STEP 6.1: Daily Routine**
+
+**Every day (5 minutes):**
+
+**Morning Check:**
+1. Go to: https://render.com/dashboard
+2. Click "crypto-trading-bot"
+3. Click "Logs"
+4. Check recent cycles
+5. Look for errors
+
+**Evening Check:**
+1. Open your dashboard URL
+2. Verify "Running" status
+3. Confirm green "TESTNET" badge
+
+---
+
+## **STEP 6.2: What to Look For**
+
+**✅ Good Signs:**
+- Cycle numbers increasing
+- Price updates every 15 min
+- Balance stays $10,000
+- No error messages
+- Service status: "Live"
+
+**❌ Warning Signs:**
+- No new cycles
+- Same cycle number for hours
+- Error messages in logs
+- Service status: "Failed"
+- Balance changed unexpectedly
+
+---
+
+## **STEP 6.3: How to Stop Bot**
+
+**Emergency Stop:**
+
+1. Go to Render dashboard
+2. Click "crypto-trading-bot"
+3. Click **"Suspend"** button
+4. Bot stops immediately
+
+**To Restart:**
+1. Click **"Resume"**
+2. Or click **"Manual Deploy"**
+3. Wait 2 minutes
+4. Check logs
+
+---
+
+<a name="section-7"></a>
+# 🎯 SECTION 7: GOING LIVE (After 2-4 Weeks)
+
+## **⚠️ BEFORE YOU START**
+
+**Complete Testing Checklist:**
+
+- [ ] Tested for 2+ weeks on testnet
+- [ ] Bot ran without major issues
+- [ ] Checked logs daily
+- [ ] Understand how everything works
+- [ ] Can afford to lose ₹20,000
+- [ ] Read all documentation
+- [ ] Know how to stop bot
+- [ ] Emotionally prepared
+
+**If ANY box unchecked → Keep testing!**
+
+---
+
+## **STEP 7.1: Create LIVE Account**
+
+1. Go to: **https://www.delta.exchange** (not testnet!)
+2. Sign up
+3. Complete KYC verification
+4. Wait for approval
+
+---
+
+## **STEP 7.2: Deposit Funds**
+
+1. Login to delta.exchange
+2. Go to "Wallet"
+3. Click "Deposit"
+4. Transfer ₹20,000
+5. Wait for confirmation
+
+---
+
+## **STEP 7.3: Create LIVE API Keys**
+
+1. Settings → API
+2. Create new key: "Live Bot"
+3. Permissions: Read, Trade, Order History
+4. **SAVE KEYS IMMEDIATELY**
+
+---
+
+## **STEP 7.4: Update Render**
+
+**CRITICAL STEP:**
+
+1. Render → crypto-trading-bot → Environment
+2. Update these 3 variables:
+
+| Variable | New Value |
+|----------|-----------|
+| `DELTA_API_KEY` | (new LIVE key) |
+| `DELTA_API_SECRET` | (new LIVE secret) |
+| `DELTA_TESTNET` | `false` ← IMPORTANT! |
+
+3. Click "Save Changes"
+4. Do same for crypto-dashboard
+
+---
+
+## **STEP 7.5: Verify LIVE Mode**
+
+**Check logs should show:**
+```
+Mode: 🔴 LIVE TRADING
+⚠️  Using REAL MONEY
+Connected to Delta Exchange LIVE
+Total: $250.00  (your actual money)
