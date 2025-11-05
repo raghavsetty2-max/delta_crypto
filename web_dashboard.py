@@ -149,7 +149,7 @@ HTML = '''
             <h3 style="margin-bottom: 15px; color: #667eea;">📊 Monitor Bot</h3>
             <p style="color: #666;">
                 1. Go to Render Dashboard<br>
-                2. Click "crypto-trading-bot"<br>
+                2. Click "delta_crypto"<br>
                 3. Click "Logs" tab<br>
                 4. View real-time activity
             </p>
@@ -167,7 +167,7 @@ HTML = '''
 @app.route('/')
 def home():
     testnet = os.getenv('DELTA_TESTNET', 'true').lower() == 'true'
-    symbol = os.getenv('TRADING_SYMBOL', 'BTC/USDT')
+    symbol = os.getenv('TRADING_SYMBOL', 'BTCUSD')
     interval = int(os.getenv('INTERVAL_SECONDS', '900')) // 60
     
     return render_template_string(HTML, testnet=testnet, symbol=symbol, interval=interval)
@@ -179,4 +179,14 @@ def health():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+```
+
+---
+
+# 📄 **FILE 4: Procfile**
+
+**⚠️ Filename exactly: `Procfile` (no extension!)**
+```
+web: gunicorn web_dashboard:app --bind 0.0.0.0:$PORT
+worker: python main_bot.py
 
