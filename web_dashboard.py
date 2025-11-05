@@ -179,14 +179,5 @@ def health():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
-```
 
----
-
-# 📄 **FILE 4: Procfile**
-
-**⚠️ Filename exactly: `Procfile` (no extension!)**
-```
-web: gunicorn web_dashboard:app --bind 0.0.0.0:$PORT
-worker: python main_bot.py
 
